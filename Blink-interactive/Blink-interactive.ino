@@ -26,6 +26,9 @@
 #define LED_G 7
 #define LED_B 8
 
+String in = "";
+uint8_t mode = 7; //bits correspond to colors
+
 // the setup function runs once when you press reset or power the board
 void setup() {
   // initialize pins for LEDs as output
@@ -37,38 +40,52 @@ void setup() {
   digitalWrite(LED_G, LOW);
   digitalWrite(LED_B, LOW);
 
-  Serial.begin(9600)
+  SerialUSB.begin(9600);
+  while (!SerialUSB);
+  SerialUSB.println("ready to go\n");
+  SerialUSB.flush();
+
+  mode = 7;
 }
 
 // the loop function runs over and over again forever
 void loop() {
 
-  /** Blink red twice per second **/
-//  digitalWrite(LED_R, HIGH);   // turn the LED on (HIGH is the voltage level)
-//  delay(250);                       // wait for a second
-//  digitalWrite(LED_R, LOW);    // turn the LED off by making the voltage LOW
-//  delay(250);                       // wait for a second
+  if (SerialUSB.available()) {
+    in = SerialUSB.readStringUntil('\n');
+    SerialUSB.println(in);
+  }
 
+  if (in.equals("red") || in.equals("white") || in.equals("yellow") || in.equals("purple") )
+    mode = mode | 0x1;
+  else 
+    mode = (mode & ~0x1);
+  if (in.equals("green") || in.equals("white") || in.equals("yellow") || in.equals("periwinkle"))
+    mode = mode | 0x2;
+  else 
+    mode = (mode & ~0x2);
+  if (in.equals("blue") || in.equals("white") || in.equals("purple") || in.equals("periwinkle"))
+    mode = mode | 0x4;
+  else 
+    mode = (mode & ~0x4);
 
-  /** Blink Green twice per second; can do the same with Blue **/
-//  digitalWrite(LED_G, HIGH);  
-//  delay(250);                 
-//  digitalWrite(LED_G, LOW);  
-//  delay(250);            
+  //write the bits depending on the active mode
+  if (mode & 1)
+    digitalWrite(LED_R, HIGH);
+  if (mode & 2)
+    digitalWrite(LED_G, HIGH);
+  if (mode & 4)
+    digitalWrite(LED_B, HIGH);
 
-  /** Blink red twice per second **/
-//  digitalWrite(LED_R, HIGH);   
-//  delay(250);                  
-//  digitalWrite(LED_R, LOW);   
-//  delay(250);                 
+  delay(500);
 
-  /** Toggle LED white  **/
-  digitalWrite(LED_R, HIGH);  
-  digitalWrite(LED_G, HIGH);  
-  digitalWrite(LED_B, HIGH);  // Turning on all LEDs will lead to a white light
-  delay(500);                 
-  digitalWrite(LED_R, LOW); 
-  digitalWrite(LED_G, LOW); 
-  digitalWrite(LED_B, LOW);   
-  delay(500);                 
+  if (mode & 1)
+    digitalWrite(LED_R, LOW);
+  if (mode & 2)
+    digitalWrite(LED_G, LOW);
+  if (mode & 4)
+    digitalWrite(LED_B, LOW);
+
+  delay(500);
+             
 }

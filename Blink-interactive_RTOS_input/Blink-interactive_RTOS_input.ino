@@ -44,7 +44,6 @@ static void readInput(void* arg){
       SerialUSB.print(c);
       xQueueSend(inputQueue, (void *) &c, (TickType_t) 0);
     }
-    SerialUSB.println("");
     vTaskDelay(50L * configTICK_RATE_HZ/1000);
   }
 }
@@ -83,14 +82,14 @@ static void  updateMode(void* arg) {
         SerialUSB.print("Received character from queue: ");
         SerialUSB.println(c);
         mode = selectMode(c);
+        SerialUSB.print("Update mode to ");
+        SerialUSB.println(mode);
       }
       else mode = 0;
         
       digitalWrite(LED_R, LOW);
       digitalWrite(LED_G, LOW);
       digitalWrite(LED_B, LOW);
-      SerialUSB.print("Update mode to ");
-      SerialUSB.println(mode);
   
       vTaskResume(redHandle);
       vTaskSuspend(stateHandle);
@@ -112,11 +111,10 @@ static void ThreadRed(void* arg) {
 
       //If this is the last LED to turn on for intended color, delay
       if (mode == 1) 
-        vTaskDelay(1500L * configTICK_RATE_HZ / 1000);  
+        vTaskDelay(1000L * configTICK_RATE_HZ / 1000);  
     }
     else {
       digitalWrite(LED_R, LOW);
-      SerialUSB.println("Red off");
     }
 
   //set done flag, give back semaphore, (possibly) update state, then delay to transfer control
@@ -141,7 +139,7 @@ static void ThreadGreen(void* arg) {
 
       //If this is the last LED to turn on for the intended color, delay
       if (mode == 2 || mode == 4)
-        vTaskDelay(1500L * configTICK_RATE_HZ / 1000);
+        vTaskDelay(1000L * configTICK_RATE_HZ / 1000);
     }
     else {
       digitalWrite(LED_G, LOW);
@@ -166,7 +164,7 @@ static void ThreadBlue(void* arg) {
 
       
       //If this is the last LED to turn on for intended color, delay
-      vTaskDelay(1500L * configTICK_RATE_HZ / 1000);
+      vTaskDelay(1000L * configTICK_RATE_HZ / 1000);
     }
     else {
       digitalWrite(LED_B, LOW);
@@ -238,8 +236,8 @@ void setup() {
   }
 
   
-  taskRead = xTaskCreate( updateMode, NULL, configMINIMAL_STACK_SIZE, NULL, 5, &stateHandle);
-  if (taskUpdate != pdPASS) {
+  taskRead = xTaskCreate( readInput, NULL, configMINIMAL_STACK_SIZE, NULL, 3, NULL);
+  if (taskRead != pdPASS) {
     SerialUSB.println("Creation read task failed!");
     while(1);
   }

@@ -13,7 +13,7 @@ void setup() {
   digitalWrite(LED_G, LOW);
   digitalWrite(LED_B, LOW);
 
-  Serial.begin(9600)
+  SerialUSB.begin(9600);
 }
 
 // the loop function runs over and over again forever

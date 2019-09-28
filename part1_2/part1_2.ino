@@ -52,12 +52,18 @@ void loop() {
     mode = (mode & ~0x4);
 
   //write the bits depending on the active mode
-  if (mode & 1)
+  if (mode & 1) {
     digitalWrite(LED_R, HIGH);
-  if (mode & 2)
+    SerialUSB.println("Red on");
+  }
+  if (mode & 2) {
     digitalWrite(LED_G, HIGH);
-  if (mode & 4)
+    SerialUSB.println("Green on");
+  }
+  if (mode & 4) {
     digitalWrite(LED_B, HIGH);
+    SerialUSB.println("Blue on");
+  }
 
   delay(500);
 

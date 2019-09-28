@@ -142,7 +142,7 @@ static void ThreadBlue(void* arg) {
     //turn on LED, but only if in the right mode
     if (mode == 3 || mode == 5 || mode == 6 || mode == 7) {
       digitalWrite(LED_B, HIGH);
-
+      SerialUSB.println("Blue on");
       
       //If this is the last LED to turn on for intended color, delay
       vTaskDelay(1000L * configTICK_RATE_HZ / 1000);
@@ -178,9 +178,9 @@ void setup() {
   SerialUSB.flush();
   mode = 0;
 
-  SerialUSB.println(configMINIMAL_STACK_SIZE); //130
-  SerialUSB.println(configTICK_RATE_HZ); //1000
-  SerialUSB.println(portMAX_DELAY); // max for 32-bit unsigned int
+//  SerialUSB.println(configMINIMAL_STACK_SIZE); //130
+//  SerialUSB.println(configTICK_RATE_HZ); //1000
+//  SerialUSB.println(portMAX_DELAY); // max for 32-bit unsigned int
 
   sem = xSemaphoreCreateCounting(1, 1);
   if (sem==NULL) {

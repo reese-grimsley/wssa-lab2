@@ -1,26 +1,4 @@
-/*
-  Blink
 
-  Turns an LED on for one second, then off for one second, repeatedly.
-
-  Most Arduinos have an on-board LED you can control. On the UNO, MEGA and ZERO
-  it is attached to digital pin 13, on MKR1000 on pin 6. LED_BUILTIN is set to
-  the correct LED pin independent of which board is used.
-  If you want to know what pin the on-board LED is connected to on your Arduino
-  model, check the Technical Specs of your board at:
-  https://www.arduino.cc/en/Main/Products
-
-  modified 8 May 2014
-  by Scott Fitzgerald
-  modified 2 Sep 2016
-  by Arturo Guadalupi
-  modified 8 Sep 2016
-  by Colby Newman
-
-  This example code is in the public domain.
-
-  http://www.arduino.cc/en/Tutorial/Blink
-*/
 #include <FreeRTOS_ARM.h>
 
 #define LED_R 6
@@ -30,10 +8,9 @@
 String in = "";
 uint8_t mode = 7; //bits correspond to colors
 
-
+/* Simply port the code from part1_2 into a FreeRTOS task */
 static void Thread1(void* arg) {
   while (1) {
-
 
   if (SerialUSB.available()) {
     in = SerialUSB.readStringUntil('\n');
@@ -100,12 +77,12 @@ void setup() {
   SerialUSB.println(configMINIMAL_STACK_SIZE);
   SerialUSB.println(configTICK_RATE_HZ);
 
-    portBASE_TYPE s1;
-      s1 = xTaskCreate(Thread1, NULL, configMINIMAL_STACK_SIZE, NULL, 2, NULL);
-      if (s1 != pdPASS) {
-        SerialUSB.println("Creation of task 1 failed!");
-        while(1);
-      }
+	portBASE_TYPE s1;
+	  s1 = xTaskCreate(Thread1, NULL, configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+	  if (s1 != pdPASS) {
+		SerialUSB.println("Creation of task 1 failed!");
+		while(1);
+	  }
   vTaskStartScheduler();
 }
 
